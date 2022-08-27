@@ -1,7 +1,15 @@
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 
+const daysValue = document.querySelector('[data-days]');
+const hoursValue = document.querySelector('[data-hours]');
+const minutesValue = document.querySelector('[data-minutes]');
+const secondsValue = document.querySelector('[data-seconds]');
 const btnStart = document.querySelector('[data-start]');
+let chosenDate = null;
+let time = {};
+let intervalId = null;
+
 btnStart.setAttribute('disabled', 'true');
 
 flatpickr('#datetime-picker', {
@@ -14,13 +22,23 @@ flatpickr('#datetime-picker', {
       window.alert('Please choose a date in the future');
     }
     btnStart.removeAttribute('disabled');
+
+    chosenDate = Number(selectedDates[0]);
   },
 });
 
 btnStart.addEventListener('click', onTimerStart);
 
 function onTimerStart() {
-  console.log('hello');
+  intervalId = setInterval(() => {
+    time = convertMs(chosenDate - Date.now());
+
+    daysValue.textContent = time.days;
+    hoursValue.textContent = time.hours;
+    minutesValue.textContent = time.minutes;
+    secondsValue.textContent = time.seconds;
+  }, 1000);
+  btnStart.setAttribute('disabled', 'true');
 }
 
 function convertMs(ms) {
@@ -31,13 +49,19 @@ function convertMs(ms) {
   const day = hour * 24;
 
   // Remaining days
-  const days = Math.floor(ms / day);
+  const days = padWrapper(Math.floor(ms / day));
   // Remaining hours
-  const hours = Math.floor((ms % day) / hour);
+  const hours = padWrapper(Math.floor((ms % day) / hour));
   // Remaining minutes
-  const minutes = Math.floor(((ms % day) % hour) / minute);
+  const minutes = padWrapper(Math.floor(((ms % day) % hour) / minute));
   // Remaining seconds
-  const seconds = Math.floor((((ms % day) % hour) % minute) / second);
+  const seconds = padWrapper(
+    Math.floor((((ms % day) % hour) % minute) / second)
+  );
 
   return { days, hours, minutes, seconds };
+}
+
+function padWrapper(value) {
+  return String(value).padStart(2, '0');
 }
