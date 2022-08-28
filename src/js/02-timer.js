@@ -32,12 +32,21 @@ btnStart.addEventListener('click', onTimerStart);
 function onTimerStart() {
   intervalId = setInterval(() => {
     time = convertMs(chosenDate - Date.now());
-
+    const deltaTime = chosenDate - Date.now();
     daysValue.textContent = time.days;
     hoursValue.textContent = time.hours;
     minutesValue.textContent = time.minutes;
     secondsValue.textContent = time.seconds;
+
+    if (deltaTime <= 0) {
+      clearInterval(intervalId);
+      daysValue.textContent = '00';
+      hoursValue.textContent = '00';
+      minutesValue.textContent = '00';
+      secondsValue.textContent = '00';
+    }
   }, 1000);
+
   btnStart.setAttribute('disabled', 'true');
 }
 
